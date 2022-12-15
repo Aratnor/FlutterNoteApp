@@ -21,7 +21,9 @@ class _ListingState extends State<ListingWidget> {
 
     if(!mounted) return;
 
-    noteList.add(result);
+    setState(() {
+      noteList.add(result);
+    });
   }
 
   @override
@@ -31,18 +33,18 @@ class _ListingState extends State<ListingWidget> {
         title: const Text("Note App"),
       ),
       body: Center(
-        child: ListView.builder(
+        child: ListView.separated(
             padding: const EdgeInsets.all(8.0),
             itemCount: noteList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
+            itemBuilder: (_, int index) =>
+              Container(
                 height: 50,
                 color: Colors.amber[100],
                 child: Center(
                   child: Text("Note Title : ${noteList[index].title} Desc : ${noteList[index].desc}"),
                 )
-              );
-            }
+              ),
+          separatorBuilder: (BuildContext context, int index) => const Divider(),
         )
       ),
       floatingActionButton: FloatingActionButton(
