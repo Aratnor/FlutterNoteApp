@@ -26,26 +26,36 @@ class _ListingState extends State<ListingWidget> {
     });
   }
 
+  Widget _getEmptyListView() {
+    return const Text("I wish i have some notes");
+  }
+
+  Widget _getListView() {
+    return ListView.separated(
+      padding: const EdgeInsets.all(8.0),
+      itemCount: noteList.length,
+      itemBuilder: (_, int index) =>
+          Container(
+              height: 50,
+              color: Colors.amber[100],
+              child: Center(
+                child: Text("Note Title : ${noteList[index].title} Desc : ${noteList[index].desc}"),
+              )
+          ),
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    Widget childWidget = noteList.isEmpty ? _getEmptyListView() : _getListView();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Note App"),
       ),
       body: Center(
-        child: ListView.separated(
-            padding: const EdgeInsets.all(8.0),
-            itemCount: noteList.length,
-            itemBuilder: (_, int index) =>
-              Container(
-                height: 50,
-                color: Colors.amber[100],
-                child: Center(
-                  child: Text("Note Title : ${noteList[index].title} Desc : ${noteList[index].desc}"),
-                )
-              ),
-          separatorBuilder: (BuildContext context, int index) => const Divider(),
-        )
+        child: childWidget
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateAddNoteAndAwait(context),
