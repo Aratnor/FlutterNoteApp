@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_note_app/addnote/AddNoteWidget.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../Note.dart';
 
@@ -12,6 +14,30 @@ class ListingWidget extends StatefulWidget {
 
 class _ListingState extends State<ListingWidget> {
   List<Note> noteList = List.empty(growable: true);
+
+  Future<List<Note>> _getAllNotesFromDatabase() async {
+    final database = openDatabase(
+      join(await getDatabasesPath(), 'note_database.db'),
+      onCreate: (db, version) {
+        return db.execute(
+          'CREATE TABLE notes(id INTEGER PRIMARY KEY, title TEXT, desc TEXT, titleDesc TEXT)',
+        );
+      },
+      version: 1,
+    );
+    final db = await database;
+
+    final List<Map<String,dynamic>> maps = await db.query('notes');
+
+    return List.generate(maps.length, (index) {
+        return Note(
+          maps[index]['id'],
+          maps[index]['title'],
+          maps[index]['desc'],
+          maps[index]['titleDesc']
+        );
+    });
+  }
 
   Future<void> _navigateAddNoteAndAwait(BuildContext context) async {
     final result = await Navigator.push(
@@ -58,15 +84,28 @@ class _ListingState extends State<ListingWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Widget childWidget = noteList.isEmpty ? _getEmptyListView() : _getListView();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Note App"),
       ),
-      body: Center(
-        child: childWidget
-      ),
+      body: FutureBuilder<List<Note>>(
+        future: _getAllNotesFromDatabase(),
+        builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
+          if(!snapshot.hasData) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            if(snapshot.data == null || snapshot.data!.isEmpty) {
+              return _getEmptyListView();
+            } else {
+              noteList = snapshot.data!;
+              return _getListView();
+            }
+          }
+        },
+      ) ,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateAddNoteAndAwait(context),
         tooltip: 'Increment',

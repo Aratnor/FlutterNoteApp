@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../Note.dart';
 
@@ -16,7 +18,26 @@ class _AddNoteState extends State<AddNoteWidget> {
   String desc = "";
   String titleDesc = "";
 
-  void _navigateBackToListingWidget() {
+  Future<void> insertNote(Note note) async {
+    final database = openDatabase(
+      join(await getDatabasesPath(), 'note_database.db'),
+      onCreate: (db, version) {
+        return db.execute(
+          'CREATE TABLE notes(id INTEGER PRIMARY KEY, title TEXT, desc TEXT, titleDesc TEXT)',
+        );
+      },
+      version: 1,
+    );
+    final db = await database;
+
+    await db.insert(
+      'notes',
+      note.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  void _navigateBackToListingWidget() async {
 
     FocusManager.instance.primaryFocus?.unfocus();
     if(title.isNotEmpty && desc.isNotEmpty) {
@@ -24,9 +45,11 @@ class _AddNoteState extends State<AddNoteWidget> {
     } else {
       titleDesc = "";
     }
-    Note note = Note(title,desc,titleDesc);
+    Note note = Note(UniqueKey().hashCode,title,desc,titleDesc);
 
-    Navigator.pop(context,note);
+    await insertNote(note);
+
+    Navigator.pop(this.context,note);
   }
 
   @override
