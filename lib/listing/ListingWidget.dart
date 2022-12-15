@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_note_app/addnote/AddNoteWidget.dart';
 
-import 'Note.dart';
-import 'main.dart';
+import '../Note.dart';
 
 class ListingWidget extends StatefulWidget {
   const ListingWidget({super.key});
@@ -16,7 +16,7 @@ class _ListingState extends State<ListingWidget> {
   Future<void> _navigateAddNoteAndAwait(BuildContext context) async {
     final result = await Navigator.push(
         context, 
-        MaterialPageRoute(builder: (context) => const MyHomePage())
+        MaterialPageRoute(builder: (context) => const AddNoteWidget())
     );
 
     if(!mounted) return;
