@@ -36,10 +36,20 @@ class _ListingState extends State<ListingWidget> {
       itemCount: noteList.length,
       itemBuilder: (_, int index) =>
           Container(
-              height: 50,
+              padding: const EdgeInsets.all(8.0),
               color: Colors.amber[100],
               child: Center(
-                child: Text("Note Title : ${noteList[index].title} Desc : ${noteList[index].desc}"),
+                child: Column(children: [
+                  Text(
+                    noteList[index].title,
+                    style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 24),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    noteList[index].desc,
+                    style: const TextStyle(fontSize: 16),
+                  )
+                ],)
               )
           ),
       separatorBuilder: (BuildContext context, int index) => const Divider(),

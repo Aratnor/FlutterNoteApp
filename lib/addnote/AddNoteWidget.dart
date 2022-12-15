@@ -17,6 +17,7 @@ class _AddNoteState extends State<AddNoteWidget> {
   String titleDesc = "";
 
   void _navigateBackToListingWidget() {
+
     FocusManager.instance.primaryFocus?.unfocus();
     if(title.isNotEmpty && desc.isNotEmpty) {
       titleDesc = "Title is $title and Desc is $desc";
@@ -35,28 +36,40 @@ class _AddNoteState extends State<AddNoteWidget> {
         title: const Text('Note App'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Enter Title',
-            ),
-            TextField(
-              autofocus: true,
-              onChanged: (text) {
-                title = text;
-              },
-            ),
-            const Text(
-                'Enter Description'
-            ),
-            TextField(
-              autofocus: true,
-              onChanged: (text) {
-                desc = text;
-              },),
-            Text(titleDesc)
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Spacer(),
+              TextField(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Title',
+                ),
+                onChanged: (String value) async {
+                  debugPrint('title onSubmitted $value');
+                  if(value.isNotEmpty) {
+                    title = value;
+                  }
+                },
+              ),
+              const SizedBox(height: 24,),
+              TextField(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Desc',
+                ),
+                onChanged: (String value) async {
+                  debugPrint('desc onSubmitted $value');
+                  if(value.isNotEmpty) {
+                    desc = value;
+                  }
+                },),
+              const Spacer(),
+              const Spacer()
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
